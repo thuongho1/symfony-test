@@ -9,16 +9,27 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 
 class ProductChangedNotifier implements EventSubscriberInterface
 {
     protected MailerInterface $mailer;
 
+    protected SerializerInterface $serializer;
 
     public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;
+        $normalizer = new ObjectNormalizer();
+        $encoder = new JsonEncoder();
+
+        $this->serializer = new Serializer([$normalizer], [$encoder]);
     }
     // this method can only return the event names; you cannot define a
     // custom method name to execute when each event triggers
@@ -48,11 +59,20 @@ class ProductChangedNotifier implements EventSubscriberInterface
         if (!$product instanceof Product) {
             return;
         }
+        $product->toArray();
         $this->sendNotifyEmail($product, 'created');
     }
 
     private function sendNotifyEmail($product, $action): void
     {
+
+        $product_array = $this->serializer->normalize($product, null, [AbstractNormalizer::IGNORED_ATTRIBUTES => ['categories']]);
+
+        $categories = $product->getCategories()->toArray();
+
+        foreach ($categories as $category) {
+            $product_array['categories'][] = $category->getTitle();
+        }
 
         $email = (new TemplatedEmail())
             ->from('fabien@example.com')
@@ -60,12 +80,10 @@ class ProductChangedNotifier implements EventSubscriberInterface
             ->subject("The product has been $action!")
             ->htmlTemplate('emails/product.html.twig')
             ->context([
-                'product' => $product,
+                'product' => $product_array,
                 'action' => $action
             ]);
         $this->mailer->send($email);
 
     }
-
-
 }

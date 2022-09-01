@@ -17,5 +17,3 @@
 
 - `php bin/console app:import-entity --type=product --path=/path/to/file/products.json`
 - `php bin/console app:import-entity --type=category --path=/path/to/file/categories.json`
-
-## Set mail env
