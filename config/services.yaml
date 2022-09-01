@@ -19,6 +19,19 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-
+    app.product_service:
+        alias: App\Service\ProductService
+        public: true
+    app.category_service:
+        alias: App\Service\CategoryService
+        public: true
+    App\EventListener\ProductChangedNotifier:
+        tags:
+            -  { name: doctrine.orm.event_listener, event: postPersist, entity: 'App\Entity\Product' }
+#            -  { name: doctrine.orm.entity_listener, event: postUpdate, entity: 'App\Entity\Product' }
+#            - # these are the options required to define the entity listener
+#                name: 'doctrine.orm.entity_listener'
+#                event: 'postUpdate'
+#                entity: 'App\Entity\Product'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

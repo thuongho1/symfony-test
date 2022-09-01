@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Category;
+use App\EventListener\ProductChangedNotifier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Category>
@@ -16,9 +19,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CategoryRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, ValidatorInterface $validator)
     {
         parent::__construct($registry, Category::class);
+        $this->validator = $validator;
     }
 
     public function add(Category $entity, bool $flush = false): void
@@ -39,7 +43,32 @@ class CategoryRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
+    public function findByEId($eId)
+    {
+        return $this->findOneBy(['eId' => $eId]);
+    }
+
+
+    public function createOrUpdateFromArray($data)
+    {
+        if (!empty($data['eId'])) {
+            $category = $this->findByEId($data['eId']);
+        }
+        if (empty($category)) {
+            $category = new Category();
+            $category->setEId($data['eId'] ?? NULL);
+        }
+
+        $category->setTitle($data['title']);
+
+        $errors = $this->validator->validate($category);
+        if (count($errors) == 0) {
+            $this->add($category, true);
+            return TRUE;
+        }
+        return FALSE;
+    }
+//    /**  */
 //     * @return Category[] Returns an array of Category objects
 //     */
 //    public function findByExampleField($value): array

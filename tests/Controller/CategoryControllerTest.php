@@ -45,7 +45,7 @@ class CategoryControllerTest extends WebTestCase
 
         $this->client->submitForm('Save', [
             'category[title]' => 'Testing',
-            'category[eid]' => 'Testing',
+            'category[eId]' => 'Testing',
             'category[products]' => 'Testing',
         ]);
 
@@ -86,7 +86,7 @@ class CategoryControllerTest extends WebTestCase
 
         $this->client->submitForm('Update', [
             'category[title]' => 'Something New',
-            'category[eid]' => 'Something New',
+            'category[eId]' => 'Something New',
             'category[products]' => 'Something New',
         ]);
 

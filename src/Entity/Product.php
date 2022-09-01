@@ -6,8 +6,11 @@ use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[UniqueEntity('eId')]
 class Product
 {
     #[ORM\Id]
@@ -16,13 +19,16 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 12)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 12)]
     private ?string $title = null;
 
     #[ORM\Column]
+    #[Assert\Range(max: 200)]
     private ?float $price = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $eid = null;
+    #[ORM\Column(nullable: true, unique: true)]
+    private ?int $eId = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'products')]
     private Collection $categories;
@@ -61,14 +67,14 @@ class Product
         return $this;
     }
 
-    public function getEid(): ?int
+    public function getEId(): ?int
     {
-        return $this->eid;
+        return $this->eId;
     }
 
-    public function setEid(?int $eid): self
+    public function setEId(?int $eId): self
     {
-        $this->eid = $eid;
+        $this->eId = $eId;
 
         return $this;
     }

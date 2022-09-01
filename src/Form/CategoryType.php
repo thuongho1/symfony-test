@@ -12,9 +12,9 @@ class CategoryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title')
-            ->add('eid')
-            ->add('products')
+            ->add('title', NULL, ['attr' => ['minlength' => 3, 'maxlength' => 12]])
+            ->add('eId')
+//            ->add('products')
         ;
     }
 

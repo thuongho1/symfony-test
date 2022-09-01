@@ -6,8 +6,11 @@ use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[UniqueEntity('eId')]
 class Category
 {
     #[ORM\Id]
@@ -16,10 +19,12 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 12)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 12)]
     private ?string $title = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $eid = null;
+    #[ORM\Column(nullable: true, unique: true)]
+    private ?int $eId = null;
 
     #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'categories')]
     private Collection $products;
@@ -27,6 +32,7 @@ class Category
     public function __construct()
     {
         $this->products = new ArrayCollection();
+        $this->product1s = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -46,14 +52,14 @@ class Category
         return $this;
     }
 
-    public function getEid(): ?int
+    public function getEId(): ?int
     {
-        return $this->eid;
+        return $this->eId;
     }
 
-    public function setEid(?int $eid): self
+    public function setEId(?int $eId): self
     {
-        $this->eid = $eid;
+        $this->eId = $eId;
 
         return $this;
     }
@@ -84,4 +90,5 @@ class Category
 
         return $this;
     }
+
 }

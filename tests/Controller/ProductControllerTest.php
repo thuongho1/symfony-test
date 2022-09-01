@@ -46,7 +46,7 @@ class ProductControllerTest extends WebTestCase
         $this->client->submitForm('Save', [
             'product[title]' => 'Testing',
             'product[price]' => 'Testing',
-            'product[eid]' => 'Testing',
+            'product[eId]' => 'Testing',
             'product[categories]' => 'Testing',
         ]);
 
@@ -90,7 +90,7 @@ class ProductControllerTest extends WebTestCase
         $this->client->submitForm('Update', [
             'product[title]' => 'Something New',
             'product[price]' => 'Something New',
-            'product[eid]' => 'Something New',
+            'product[eId]' => 'Something New',
             'product[categories]' => 'Something New',
         ]);
 

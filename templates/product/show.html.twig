@@ -12,6 +12,10 @@
                 <td>{{ product.id }}</td>
             </tr>
             <tr>
+                <th>EId</th>
+                <td>{{ product.eId }}</td>
+            </tr>
+            <tr>
                 <th>Title</th>
                 <td>{{ product.title }}</td>
             </tr>
@@ -20,9 +24,10 @@
                 <td>{{ product.price }}</td>
             </tr>
             <tr>
-                <th>Eid</th>
-                <td>{{ product.eid }}</td>
+                <th>Categories</th>
+                <td>{{ product.categories |join(' , ')  }}</td>
             </tr>
+
         </tbody>
     </table>
 
