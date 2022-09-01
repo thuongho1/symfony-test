@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -23,12 +24,14 @@ class ProductChangedNotifier implements EventSubscriberInterface
 
     protected SerializerInterface $serializer;
 
-    public function __construct(MailerInterface $mailer)
+    private $params;
+
+    public function __construct(MailerInterface $mailer, ContainerBagInterface $params)
     {
         $this->mailer = $mailer;
+        $this->params = $params;
         $normalizer = new ObjectNormalizer();
         $encoder = new JsonEncoder();
-
         $this->serializer = new Serializer([$normalizer], [$encoder]);
     }
     // this method can only return the event names; you cannot define a
@@ -73,10 +76,12 @@ class ProductChangedNotifier implements EventSubscriberInterface
         foreach ($categories as $category) {
             $product_array['categories'][] = $category->getTitle();
         }
+        $sender = $this->params->get('app.site_email');
+        $receive = $this->params->get('app.event_reporter_email');
 
         $email = (new TemplatedEmail())
-            ->from('fabien@example.com')
-            ->to(new Address('ryan@example.com'))
+            ->from($sender)
+            ->to($receive)
             ->subject("The product has been $action!")
             ->htmlTemplate('emails/product.html.twig')
             ->context([

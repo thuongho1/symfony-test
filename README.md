@@ -1,4 +1,4 @@
-# Thuong - Go fin go interview test
+# Thuong - Gofingo interview test
 
 ## Setup
 - Create env: `composer dump-env`
